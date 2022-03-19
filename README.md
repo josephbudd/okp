@@ -6,7 +6,7 @@ I'm building this application using go modules, go workspaces and vscode workspa
 
 ## About okp
 
-Back in the 90's, I used a cassette tape and a straight key to learn morse code. I sort of learned how to copy and also tried to teach myself how to key. I never keyed on air.
+Back in the 90's, I used a cassette tape and a straight key to learn morse code. I sort of learned how to copy and also tried to teach myself how to key. Thank goodness, I never keyed on air.
 
 A few years ago I wrote my own Go WASM code to translate my keying using a browser and a USB key. That's when I realized that I was not keying morse code, I was keying a bunch of noise.
 
@@ -122,7 +122,19 @@ nil@NIL:~/workspace_okp$ code ./okp
 
 ### 2 editors
 
-I like using 2 vscode editors. One editing the front end and one editing the back end. Both editors will also edit the shared folder.
+The front end and the back end of this application are 2 completely different and separate processes. They are only linked in 3 ways.
+
+1. Asychronous messages.
+1. State.
+  * The back end can
+    * write to state.
+    * read from state.
+    * send read only state change messages to the front end.
+  * The front end can
+    * receive read only state change messages from the back end.
+    * read from the state.
+
+There fore, like using 2 vscode editors. One editing the front end and one editing the back end. Both editors will also edit the shared folder.
 
 
 ```shell
