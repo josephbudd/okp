@@ -114,6 +114,12 @@ nil@NIL:~/workspace_okp$ ./okp/okp
 
 ## How to edit okp with vscode
 
+### 1 editor
+
+```shell
+nil@NIL:~/workspace_okp$ code ./okp
+```
+
 ### 2 editors
 
 I like using 2 vscode editors. One editing the front end and one editing the back end. Both editors will also edit the shared folder.
