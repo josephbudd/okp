@@ -97,7 +97,7 @@ nnil@NIL:~/workspace_okp$ sudo apt update
 nil@NIL:~/workspace_okp$ sudo apt install libasound2-dev
 ```
 
-### Step 3: Add mousepad.go to fyne
+### Step 3: Add my mousepad widget to fyne
 
 ```shell
 nil@NIL:~/workspace_okp$ cp ./okp/_files/mousepad.go ./fyne/widget/
