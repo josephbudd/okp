@@ -136,9 +136,8 @@ The front end and the back end of this application are 2 completely different an
 
 For the sake of simplicity and logic, I use 2 vscode editors.
 
-1. An editor for the front end.
-1. An editor for the back end.
-1. Both editors also edit the shared folder.
+1. An editor for the front end which also edits the shared folder.
+1. An editor for the back end which also edits the shared folder.
 
 
 ```shell
