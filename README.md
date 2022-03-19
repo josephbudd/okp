@@ -122,7 +122,7 @@ nil@NIL:~/workspace_okp$ code ./okp
 
 ### 2 editors
 
-The front end and the back end of this application are 2 completely different and separate processes. They are only linked in 3 ways.
+The front end and the back end of this application are 2 completely different and separate processes. They are only linked in 2 ways.
 
 1. Asychronous messages.
 1. State.
@@ -134,7 +134,11 @@ The front end and the back end of this application are 2 completely different an
     * receive read only state change messages from the back end.
     * read from the state.
 
-There fore, like using 2 vscode editors. One editing the front end and one editing the back end. Both editors will also edit the shared folder.
+For the sake of simplicity and logic, I use 2 vscode editors.
+
+1. An editor for the front end.
+1. An editor for the back end.
+1. Both editors also edit the shared folder.
 
 
 ```shell
