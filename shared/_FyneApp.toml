@@ -1,0 +1,8 @@
+Website = "https://github.com/josephbudd/okp"
+
+[Details]
+# Icon = "Icon.png"
+Name = "1 Key Piano"
+ID = "com.github.josephbudd.okp"
+Version = "1.0.0"
+Build = 1
