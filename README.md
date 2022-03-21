@@ -71,20 +71,6 @@ In **Training** one learns the current course one lesson at a time. In a lesson 
 
 The application stores it's data in easy to read text files at ~/.okp/stores/*.yaml. The **~/.okp/** folder can be deleted at any time while the app is not running.
 
-## How to simply download and run okp.
-
-The executable was built on ubuntu 20 so it should run on ubunto 20 without any issues.
-
-1. Locate your browser to [okp](https://github.com/josephbudd/okp/blob/master/okp) or click on the **okp** file link above. It's the same thing.
-1. Click on the **Download** button. You might want to just copy okp to your desktop where you can double click on it and run it.
-
-## Uninstalling okp.
-
-You don't have to uninstall okp because there is nothing to uninstall. You only have to delete
-
-1. the executable file **okp** from where ever you put it.
-1. the okp data folder at **~/.okp/**
-
 ## How to build okp
 
 I'm building this application on ubuntu 20 using Go, CGO, using Go Modules, Go Workspaces and VSCode workspaces.
@@ -133,6 +119,13 @@ nil@NIL:~/workspace_okp$ cp ./okp/_files/mousepad.go ./fyne/widget/
 nil@NIL:~/workspace_okp$ go build -o ./okp/okp ./okp/shared
 nil@NIL:~/workspace_okp$ ./okp/okp
 ```
+
+## How to uninstall okp.
+
+You don't have to uninstall okp because there is nothing to uninstall. You only have to delete
+
+1. the executable file **okp** from where ever you put it.
+1. the **.okp/** data folder at **~/.okp/**
 
 ## How to edit okp with vscode
 
