@@ -4,22 +4,24 @@
 
 ## About okp
 
-Back in the 90's, I used a cassette tape and a straight key to learn morse code.
+okp is my morse code trainer that I developed to teach myself morse code.
 
-A few years ago I wrote my own Go code to translate my keying using a browser and a USB key. That's when I realized that I was not keying morse code, I was keying a bunch of noise.
+Back in the 90's, I used a cassette tape and a straight key to learn morse code. A few years ago I wrote my own Go code to translate my keying using a browser and a USB key. That's when I realized that I was not keying morse code, I was keying a bunch of noise.
 
 Morse code is not noise. Morse code is music.
 
 ## At this state of development, the application has 2 parts, "Courses" and "Training"
 
+The application works fine. I'm testing for little things that I may have missed.
+
 ### 1. Courses
 
 In **Courses** one can
 
+* View a description of the current course and select a different current course.
 * Create a new course.
 * Edit an existing course.
 * Remove an existing course.
-* Select a new current course.
 
 #### A course has
 
@@ -67,7 +69,7 @@ In **Training** one learns the current course one lesson at a time. In a lesson 
 
 ## Data stores.
 
-The application stores it's data in easy to read text files at ~/.okp/stores/*.yaml. The **.okp/** folder can be deleted at any time while the app is not running.
+The application stores it's data in easy to read text files at ~/.okp/stores/*.yaml. The **~/.okp/** folder can be deleted at any time while the app is not running.
 
 ## How to simply download and run okp.
 
@@ -89,9 +91,9 @@ I'm building this application on ubuntu 20 using Go, CGO, using Go Modules, Go W
 
 I am using the [Fyne](https://fyne.io/) GUI. The Fyne GUI is made for all devices so it's widgets work on all devices.
 
-I wanted a simple rectangular widget with call backs for mouse events. For this reason, I used a Go Workspace because it allows me to have access to the fyne internal folder which is normally read only.
+I wanted a simple rectangular widget with call backs for mouse events. For this reason, I used a Go Workspace because it allows me to have access to the fyne widget folder which is normally read only.
 
-### Step 1: Create the Go Workspace at ~/workspace_okp
+### Step 1: Create the Go Workspace at ~/workspace_okp/
 
 ```shell
 nil@NIL:~$ cd
@@ -104,7 +106,11 @@ nil@NIL:~/workspace_okp$ go work use ./fyne
 nil@NIL:~/workspace_okp$ go work use ./okp
 ```
 
-### Step 2: Install libasound2 for okp/backend/model/goalsa
+### Step 2: Install the libasound2 library which is for the okp/backend/model/goalsa package
+
+ALSA is the Advanced Linux Sound Architecture.
+
+libasound2 is needed for the okp/backend/model/goalsa package. libasound2 is the shared library for ALSA applications. It contains the ALSA library and its standard plugins, as well as the required configuration files.
 
 ```shell
 nnil@NIL:~/workspace_okp$ sudo apt update
@@ -112,6 +118,8 @@ nil@NIL:~/workspace_okp$ sudo apt install libasound2-dev
 ```
 
 ### Step 3: Add my mousepad widget to fyne
+
+The source code for my mouse pad widget needs to be copied from a hidden folder in okp to where it belongs in the widget folder in fyne.
 
 ```shell
 nil@NIL:~/workspace_okp$ cp ./okp/_files/mousepad.go ./fyne/widget/
