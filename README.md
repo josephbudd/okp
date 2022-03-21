@@ -2,13 +2,11 @@
 
 ## This is a work in progress
 
-I'm building this application using go modules, go workspaces and vscode workspaces. I need to make the process a little more user friendly and when I do I'll document how to correctly build this app.
-
 ## About okp
 
-Back in the 90's, I used a cassette tape and a straight key to learn morse code. I sort of learned how to copy and also tried to teach myself how to key. Thank goodness, I never keyed on air.
+Back in the 90's, I used a cassette tape and a straight key to learn morse code.
 
-A few years ago I wrote my own Go WASM code to translate my keying using a browser and a USB key. That's when I realized that I was not keying morse code, I was keying a bunch of noise.
+A few years ago I wrote my own Go code to translate my keying using a browser and a USB key. That's when I realized that I was not keying morse code, I was keying a bunch of noise.
 
 Morse code is not noise. Morse code is music.
 
@@ -67,17 +65,33 @@ In **Training** one learns the current course one lesson at a time. In a lesson 
 * Correct key attempts accumulate until the required amount of correct key attempts is reached.
 * Incorrect key attempts have no effect on the accumulated correct key attempts.
 
+## Data stores.
+
+The application stores it's data in easy to read text files at ~/.okp/stores/*.yaml. The **.okp/** folder can be deleted at any time while the app is not running.
+
+## How to simply download and run okp.
+
+The executable was built on ubuntu 20 so it should run on ubunto 20 without any issues.
+
+1. Locate your browser to [okp](https://github.com/josephbudd/okp/blob/master/okp) or click on the **okp** file link above. It's the same thing.
+1. Click on the **Download** button. You might want to just copy okp to your desktop where you can double click on it and run it.
+
+## Uninstalling okp.
+
+You don't have to uninstall okp because there is nothing to uninstall. You only have to delete
+
+1. the executable file **okp** from where ever you put it.
+1. the okp data folder at **~/.okp/**
+
 ## How to build okp
+
+I'm building this application on ubuntu 20 using Go, CGO, using Go Modules, Go Workspaces and VSCode workspaces.
 
 I am using the [Fyne](https://fyne.io/) GUI. The Fyne GUI is made for all devices so it's widgets work on all devices.
 
-However, I needed a really fast and simple widget to work with my straight-key conversion to a usb-mouse on an SBC, Laptop or Box but not a phone.
+I wanted a simple rectangular widget with call backs for mouse events. For this reason, I used a Go Workspace because it allows me to have access to the fyne internal folder which is normally read only.
 
-The widget is a rectangle with call backs for mouse-in, mouse-out, mouse-button-down, mouse-button-up.
-
-For this reason, I used a go workspace because it allows me to have access to the fyne internal folder which is normally read only.
-
-### Step 1: Create the go workspace at ~/workspace_okp
+### Step 1: Create the Go Workspace at ~/workspace_okp
 
 ```shell
 nil@NIL:~$ cd
