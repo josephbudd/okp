@@ -146,4 +146,13 @@ nil@NIL:~/workspace_okp$ code ./okp/backend.code-workspace
 nil@NIL:~/workspace_okp$ code ./okp/frontend.code-workspace 
 ```
 
+## How to build a USB straigt key.
 
+![Demo Animation](../assets/USBKeyMouse.png)
+1. Get a mouse that you are willing to tear apart.
+2. Expose the left mouse button.
+3. Solder wires to each of the 2 contacts on the left mouse button.
+
+![Demo Animation](../assets/USBKey.png)
+4. Attach the other end of the 2 wires to the straight key.
+5. Plug it into an empty USB port on you computer.
