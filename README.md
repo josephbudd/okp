@@ -151,8 +151,8 @@ nil@NIL:~/workspace_okp$ code ./okp/frontend.code-workspace
 ![Mouse](../assets/USBKeyMouse.png)
 
 1. Get a mouse that you are willing to tear apart.
-2. Expose the left mouse button.
-3. Solder wires to each of the 2 contacts on the left mouse button.
+2. Expose the contacts of the left mouse button.
+3. Solder wires to each of the 2 contacts of the left mouse button.
 
 ![Key](../assets/USBKey.png)
 
