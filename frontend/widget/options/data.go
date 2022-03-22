@@ -1,5 +1,0 @@
-package options
-
-const (
-    emptyString = ""
-)
