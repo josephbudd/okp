@@ -77,7 +77,7 @@ In **Training** one learns the current course one lesson at a time. In a lesson 
 
 ## Data stores.
 
-The application stores it's data in easy to read text files at ~/.okp/stores/*.yaml. The **~/.okp/** folder can be deleted at any time while the app is not running.
+The application stores it's data in easy to read text files at \~/.okp/stores/*.yaml. The **~/.okp/** folder can be deleted at any time while the app is not running.
 
 ## How to build okp
 
