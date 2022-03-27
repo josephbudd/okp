@@ -1,18 +1,26 @@
 # okp "One Key Piano"
 
-## This is a work in progress
+## okp is a work in progress
 
-## About okp
+okp is my morse code trainer that I developed.
 
-okp is my morse code trainer that I developed to teach myself morse code.
+Morse code is not noise. Morse code is music. This application treats morse code like music.
 
-Back in the 90's, I used a cassette tape and a straight key to learn morse code. A few years ago I wrote my own Go code to translate my keying using a browser and a USB key. That's when I realized that I was not keying morse code, I was keying a bunch of noise.
+## I am a work in progress
 
-Morse code is not noise. Morse code is music.
+I am using okp to teach myself morse code.
+
+Back in the 90's, I used a cassette tape and a straight key to learn morse code. I thought I was pretty good even though I never keyed with my radio.
+
+A few years ago I wrote some Go code to translate my keying using a browser and a USB key. That's when I realized that I was not keying morse code, I was keying a bunch of noise.
+
+### I really suck at keying
+
+There is a lot of trial and error going on right now as I am trying to find the best way to teach myself to key.
 
 ## At this state of development, the application has 2 parts, "Courses" and "Training"
 
-The application works fine. I'm testing for little things that I may have missed.
+The application works fine, it's just not perfect yet.
 
 ### 1. Courses
 

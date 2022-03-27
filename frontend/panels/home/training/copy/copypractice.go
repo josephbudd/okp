@@ -93,37 +93,38 @@ func buildCopyPracticePanel() {
 	pPanel.showStartButton()
 }
 
+// showTestCheckResults is called by the messenger in func StateRX
+// messenger has already set the current visible panel if needed so don't do it here.
+// However, the user can make the choose panel visible in func showResultsTryAgain.
 func (p *copyPracticePanel) showTestCheckResults(text, userCopy, ditdahs string, passed bool) {
 	if !p.checking {
 		return
 	}
-	dialogText := fmt.Sprintf("I keyed %q.\nYou heard %q.\nYou copied %q.\n\nTry again?", text, ditdahs, userCopy)
+
+	var title string
+	if passed {
+		title = congradulationsYouPassed
+	} else {
+		title = sorryYouMissedIt
+	}
+	dialogText := fmt.Sprintf(resultsTryAgainF, text, ditdahs, userCopy)
 	f := func(tryAgain bool) {
 
 		p.contentLock.Lock()
-		defer p.contentLock.Unlock()
-
 		p.checking = false
+		p.contentLock.Unlock()
+
 		p.showStartButton()
 		if !tryAgain {
 			showCopyChoosePanel()
 		}
 	}
-	if passed {
-		dialog.ShowConfirm(
-			"Congradulations. You passed.",
-			dialogText,
-			f,
-			window,
-		)
-	} else {
-		dialog.ShowConfirm(
-			"Sorry. You missed it.",
-			dialogText,
-			f,
-			window,
-		)
-	}
+	dialog.ShowConfirm(
+		title,
+		dialogText,
+		f,
+		window,
+	)
 }
 
 func (p *copyPracticePanel) showStartButton() {

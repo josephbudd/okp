@@ -32,10 +32,19 @@ type HomeWork struct {
 // Param lesson is the lesson record.
 func BuildHomeWork(lesson Lesson) (homeWork HomeWork) {
 	text, ditdah, ditdahsForInstructions := lesson.HomeWorkTestData()
+	var instructions string
+	switch lesson.Type {
+	case TypeCharacterLesson:
+		instructions = help.CharDitDahInstructions(ditdahsForInstructions)
+	case TypeWordLesson:
+		instructions = help.WordDitDahInstructions(ditdahsForInstructions)
+	case TypeSentenceLesson:
+		instructions = help.SentenceDitDahInstructions(ditdahsForInstructions)
+	}
 	hwt := HomeWorkTest{
 		Text:         text,
 		DitDahs:      ditdah,
-		Instructions: help.CharDitDahInstructions(ditdahsForInstructions),
+		Instructions: instructions,
 	}
 	homeWork = HomeWork{
 		LessonNumber:      lesson.Number,

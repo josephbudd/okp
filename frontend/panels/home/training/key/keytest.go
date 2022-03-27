@@ -1,6 +1,7 @@
 package key
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -121,74 +122,57 @@ func (p *keyTestPanel) resetTimes() {
 	p.times[0] = time.Now()
 }
 
+// showTestCheckResults is called by the messenger in func StateRX
+// messenger has already set the current visible panel if needed so don't do it here.
+// However, the user can make the choose panel visible in func showResultsTryAgain.
 func (p *keyTestPanel) showTestCheckResults(copy, ditdahs string, passed bool) {
 	if !tPanel.checking {
 		return
 	}
+
+	p.contentLock.Lock()
+	p.checking = false
+	p.contentLock.Unlock()
+	p.showStartButton()
+
 	switch {
-	case stateUpdate.CompletedHomeWork:
-		// User passed.
-		// This keying test is over.
-		// This homework is over.
-		p.checking = false
-		p.showStartButton()
-		// Go back to the stats tab.
-		showStatsTab()
-		dialog.ShowInformation(
-			"Congradulations. You passed.",
-			"I copied the following:\n"+copy,
-			window,
-		)
 	case stateUpdate.CompletedKeying:
-		// User passed this key test all 3 times.
-		// This keying test is over.
-		// This homework is not over.
-		p.checking = false
-		p.showStartButton()
-		// Go back to the stats tab.
-		showStatsTab()
-		dialog.ShowInformation(
-			"Congradulations. You passed.",
-			"I copied the following:\n"+copy,
-			window,
-		)
+		// The user has completed keying so no more tries.
+		p.showResults(copy, ditdahs, congradulationsYouPassed)
 	case passed:
-		// The user has passed this key test this once.
-		// User has not passed this key test all 3 times.
-		// The user may continue to test or go back to the choose page.
-		// This homework is not over.
-		p.checking = false
-		p.showStartButton()
-		f := func(tryAgain bool) {
-			if !tryAgain {
-				// Passed but don't want to continue.
-				// Show the stats tab.
+		// The user has not completed copying. The user may try again.
+		p.showResultsTryAgain(copy, ditdahs, congradulationsYouPassed)
+	case !passed:
+		p.showResultsTryAgain(copy, ditdahs, sorryYouMissedIt)
+	}
+}
+
+func (p *keyTestPanel) showResults(copy, ditdahs, messageTitle string) {
+	dialogText := fmt.Sprintf(resultsF, ditdahs, copy)
+	dialog.ShowInformation(
+		messageTitle,
+		dialogText,
+		window,
+	)
+}
+
+func (p *keyTestPanel) showResultsTryAgain(copy, ditdahs, messageTitle string) {
+	dialogText := fmt.Sprintf(resultsTryAgainF, ditdahs, copy)
+	f := func(tryAgain bool) {
+		if !tryAgain {
+			if passedKeyTest() {
 				showStatsTab()
 				return
 			}
-			// Continue displaying this key test tab.
+			showKeyChoosePanel()
 		}
-		dialog.ShowConfirm(
-			"Congradulations. You passed.",
-			"I copied the following:\n"+copy+"\n\nTry again?",
-			f,
-			window,
-		)
-	case !passed: // User did not pass.
-		p.checking = false
-		p.showStartButton()
-		f := func(tryAgain bool) {
-			if !tryAgain {
-				showKeyChoosePanel()
-			}
-		}
-		dialog.ShowConfirm(
-			"Sorry. You missed it.",
-			"I copied the following:\n"+copy+"\n\nI heard the following:\n"+ditdahs+"\n\nTry again?",
-			f,
-			window,
-		)
 	}
+	dialog.ShowConfirm(
+		messageTitle,
+		dialogText,
+		f,
+		window,
+	)
 }
 
 func (p *keyTestPanel) showStartButton() {

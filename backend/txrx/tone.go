@@ -3,7 +3,6 @@ package txrx
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/josephbudd/okp/backend/model/keyservice"
 	"github.com/josephbudd/okp/shared/message"
@@ -36,7 +35,6 @@ func toneRX(ctx context.Context, ctxCancel context.CancelFunc, stores *store.Sto
 		}
 	}()
 
-	log.Printf("toneRX: toneMsg.TurnOn is %v", toneMsg.TurnOn)
 	if !toneMsg.TurnOn {
 		// Turn off the tone.
 		keyservice.StopTone()
@@ -53,6 +51,5 @@ func toneRX(ctx context.Context, ctxCancel context.CancelFunc, stores *store.Sto
 	keyservice.StartTone(ctx, speed.KeyWPM, errorCh)
 	// Wait for sound.Tone(toneCtx, wpm, errCh) to return the error if any.
 	fatal = <-errorCh
-	log.Printf("toneRX: fatal is %#v", fatal)
 	// Return any tone errors.
 }

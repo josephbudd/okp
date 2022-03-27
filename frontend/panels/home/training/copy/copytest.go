@@ -93,10 +93,20 @@ func buildCopyTestPanel() {
 	tPanel.showStartButton()
 }
 
+// showTestCheckResults is called by the messenger in func StateRX
+// messenger has already set the current visible panel if needed so don't do it here.
+// However, the user can make the choose panel visible in func showResultsTryAgain.
 func (p *copyTestPanel) showTestCheckResults(text, userCopy, ditdahs string, passed bool) {
+	if !p.checking {
+		return
+	}
+
+	p.contentLock.Lock()
+	p.checking = false
+	p.contentLock.Unlock()
+	p.showStartButton()
+
 	switch {
-	case !p.checking:
-		// Not checking results so return.
 	case stateUpdate.CompletedCopying:
 		// The user has completed copying so no more tries.
 		p.showResults(text, ditdahs, userCopy, congradulationsYouPassed)
@@ -109,11 +119,6 @@ func (p *copyTestPanel) showTestCheckResults(text, userCopy, ditdahs string, pas
 }
 
 func (p *copyTestPanel) showResults(text, ditdahs, userCopy, messageTitle string) {
-	p.contentLock.Lock()
-	p.checking = false
-	p.contentLock.Unlock()
-	p.showStartButton()
-
 	dialogText := fmt.Sprintf(resultsF, text, ditdahs, userCopy)
 	dialog.ShowInformation(
 		messageTitle,
@@ -125,16 +130,8 @@ func (p *copyTestPanel) showResults(text, ditdahs, userCopy, messageTitle string
 func (p *copyTestPanel) showResultsTryAgain(text, ditdahs, userCopy, messageTitle string) {
 	dialogText := fmt.Sprintf(resultsTryAgainF, text, ditdahs, userCopy)
 	f := func(tryAgain bool) {
-
-		p.contentLock.Lock()
-		p.checking = false
-		p.contentLock.Unlock()
-
-		p.showStartButton()
 		if !tryAgain {
 			if passedCopyTest() {
-				// Passed but don't want to continue.
-				// Show the stats tab.
 				showStatsTab()
 				return
 			}

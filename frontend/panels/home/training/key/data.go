@@ -8,7 +8,11 @@ import (
 )
 
 const (
-	emptyText = ""
+	emptyText                = ""
+	resultsTryAgainF         = "You keyed %q.\nI copied %q.\n\nTry again?"
+	resultsF                 = "You keyed %q.\nI copied %q."
+	congradulationsYouPassed = "Congradulations. You passed."
+	sorryYouMissedIt         = "Sorry. You missed it."
 )
 
 var groupID = panels.NextGroupID()
@@ -26,3 +30,8 @@ var appState *state.FrontendState
 var stateUpdate state.Message
 
 var showStatsTab func()
+
+func passedKeyTest() (passed bool) {
+	passed = stateUpdate.CompletedKeying
+	return
+}

@@ -1,6 +1,7 @@
 package key
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
@@ -153,10 +154,14 @@ func (p *keyPracticePanel) resetTimes() {
 	p.times[0] = time.Now()
 }
 
+// showTestCheckResults is called by the messenger in func StateRX
+// messenger has already set the current visible panel if needed so don't do it here.
+// However, the user can make the choose panel visible in func showResultsTryAgain.
 func (p *keyPracticePanel) showTestCheckResults(copy, ditdahs string, passed bool) {
 	if !p.checking {
 		return
 	}
+
 	f := func(tryAgain bool) {
 		p.checking = false
 		p.showStartButton()
@@ -164,21 +169,19 @@ func (p *keyPracticePanel) showTestCheckResults(copy, ditdahs string, passed boo
 			showKeyChoosePanel()
 		}
 	}
+	var title string
 	if passed {
-		dialog.ShowConfirm(
-			"Congradulations. You passed.",
-			"I copied the following:\n"+copy+"\n\nTry again?",
-			f,
-			window,
-		)
+		title = congradulationsYouPassed
 	} else {
-		dialog.ShowConfirm(
-			"Sorry. You missed it.",
-			"I copied the following:\n"+copy+"\n\nI heard the following:\n"+ditdahs+"\n\nTry again?",
-			f,
-			window,
-		)
+		title = sorryYouMissedIt
 	}
+	dialogText := fmt.Sprintf(resultsTryAgainF, ditdahs, copy)
+	dialog.ShowConfirm(
+		title,
+		dialogText,
+		f,
+		window,
+	)
 }
 
 func (p *keyPracticePanel) showStartButton() {

@@ -12,10 +12,13 @@ const (
 )
 
 // unknownKeyFromUser represents non-existant key that the user keyed.
-var unknownKeyFromUser = &record.KeyCode{
-	Character: poop,
-	DitDah:    poop,
-	IsNotReal: true,
+func unknownKeyFromUser(ditdah string) (kc *record.KeyCode) {
+	kc = &record.KeyCode{
+		Character: poop,
+		DitDah:    ditdah,
+		IsNotReal: true,
+	}
+	return
 }
 
 var WhiteSpace = &record.KeyCode{
@@ -275,7 +278,7 @@ func DitdahWordGuesses(ditdahSentenceWords [][]string, keyCodes []*record.KeyCod
 		var r *record.KeyCode
 		for i, d := range firstDitdahWordSlice {
 			if r = ditDahCharToRecord(d, keyCodes); r == nil {
-				r = unknownKeyFromUser
+				r = unknownKeyFromUser(d)
 			}
 			copyGuess.Word[i] = r
 			charChars[i] = r.Character
@@ -299,7 +302,7 @@ func DitdahWordGuesses(ditdahSentenceWords [][]string, keyCodes []*record.KeyCod
 		for j, d := range ditdahWordChars {
 			var r *record.KeyCode
 			if r = ditDahCharToRecord(d, keyCodes); r == nil {
-				r = unknownKeyFromUser
+				r = unknownKeyFromUser(d)
 			}
 			chars[j] = r
 			charChars[j] = r.Character
