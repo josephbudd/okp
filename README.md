@@ -81,7 +81,7 @@ The application stores it's data in easy to read text files at \~/.okp/stores/*.
 
 ## How to build okp
 
-I'm building this application on ubuntu 20 using Go, CGO, using Go Modules, Go Workspaces and VSCode workspaces.
+I'm building this application on ubuntu 20 using Go, CGO, Go Modules, Go Workspaces and VSCode workspaces.
 
 I am using the [Fyne](https://fyne.io/) GUI. The Fyne GUI is made for all devices so it's widgets work on all devices.
 

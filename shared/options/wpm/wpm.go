@@ -11,94 +11,100 @@ var (
 
 func init() {
 	options = []Option{
-		// Copy @ 7 wpm. Key @ 7 wpm.
+		// 7 wpm.
 		{
-			Name:         "7-5",
-			KeyWPM:       7,
 			CopyWPM:      7,
 			CopySpaceWPM: 5,
+			KeyWPM:       7,
 		},
 		{
-			Name:         "7-7",
-			KeyWPM:       7,
 			CopyWPM:      7,
 			CopySpaceWPM: 7,
+			KeyWPM:       7,
 		},
-		// Copy @ 10 wpm. Key @ 10 wpm.
+		// 10 wpm.
 		{
-			Name:         "10-5",
-			KeyWPM:       10,
 			CopyWPM:      10,
 			CopySpaceWPM: 5,
+			KeyWPM:       7,
 		},
 		{
-			Name:         "10-10",
+			CopyWPM:      10,
+			CopySpaceWPM: 7,
+			KeyWPM:       7,
+		},
+		{
+			CopyWPM:      10,
+			CopySpaceWPM: 5,
 			KeyWPM:       10,
+		},
+		{
 			CopyWPM:      10,
 			CopySpaceWPM: 10,
+			KeyWPM:       10,
 		},
-		// Copy @ 13 wpm. Key @ 13 wpm.
+		// 13 wpm.
 		{
-			Name:         "13-5",
-			KeyWPM:       13,
 			CopyWPM:      13,
 			CopySpaceWPM: 5,
+			KeyWPM:       7,
 		},
 		{
-			Name:         "13-10",
+			CopyWPM:      13,
+			CopySpaceWPM: 7,
+			KeyWPM:       7,
+		},
+		{
+			CopyWPM:      13,
+			CopySpaceWPM: 5,
 			KeyWPM:       13,
+		},
+		{
 			CopyWPM:      13,
 			CopySpaceWPM: 10,
+			KeyWPM:       13,
 		},
 		{
-			Name:         "13-13",
-			KeyWPM:       13,
 			CopyWPM:      13,
 			CopySpaceWPM: 13,
+			KeyWPM:       13,
 		},
-		// Copy @ 20 wpm. Key @ 20 wpm.
+		// 20 wpm.
 		{
-			Name:         "20-5",
-			KeyWPM:       20,
 			CopyWPM:      20,
 			CopySpaceWPM: 5,
+			KeyWPM:       20,
 		},
 		{
-			Name:         "20-10",
-			KeyWPM:       20,
 			CopyWPM:      20,
 			CopySpaceWPM: 10,
+			KeyWPM:       20,
 		},
 		{
-			Name:         "20-20",
-			KeyWPM:       20,
 			CopyWPM:      20,
 			CopySpaceWPM: 20,
+			KeyWPM:       20,
 		},
-		// Copy @ 30 wpm. Key @ 30 wpm.
+		// 30 wpm.
 		{
-			Name:         "30-5",
-			KeyWPM:       30,
 			CopyWPM:      30,
 			CopySpaceWPM: 5,
+			KeyWPM:       30,
 		},
 		{
-			Name:         "30-10",
-			KeyWPM:       30,
 			CopyWPM:      30,
 			CopySpaceWPM: 10,
+			KeyWPM:       30,
 		},
 		{
-			Name:         "30-20",
-			KeyWPM:       30,
 			CopyWPM:      30,
 			CopySpaceWPM: 20,
+			KeyWPM:       30,
 		},
 		{
-			Name:         "30-30",
-			KeyWPM:       30,
 			CopyWPM:      30,
 			CopySpaceWPM: 30,
+			KeyWPM:       30,
 		},
 	}
 	optionsLen = len(options)
@@ -106,7 +112,6 @@ func init() {
 
 // Option represents a wpm option.
 type Option struct {
-	Name         string // A unique descriptive name.
 	KeyWPM       uint64 // The user will key at this rate.
 	CopyWPM      uint64 // The app will key at this rate.
 	CopySpaceWPM uint64 // The app will key at this rate.
@@ -145,8 +150,8 @@ func ByText(text string) (id int, option Option) {
 	return
 }
 
-// ByWPMSpread returns the option where name == option.Name.
-func ByWPMSpread(keyCopyWPM, spread uint64) (id int, err error) {
+// ByWPMSpread returns the option where the wpm and spread match.
+func ByWPMSpread(copyWPM, spread, keyWPM uint64) (id int, err error) {
 
 	defer func() {
 		if err != nil {
@@ -156,11 +161,11 @@ func ByWPMSpread(keyCopyWPM, spread uint64) (id int, err error) {
 
 	var option Option
 	for id, option = range options {
-		if option.KeyWPM == keyCopyWPM {
+		if option.CopyWPM == copyWPM && option.CopySpaceWPM == spread && option.KeyWPM == keyWPM {
 			return
 		}
 	}
-	err = fmt.Errorf("speed %d, spread %d, not found in wpm.options", keyCopyWPM, spread)
+	err = fmt.Errorf("copyWPM %d, spread %d, keyWPM %d not found in wpm.options", copyWPM, spread, keyWPM)
 	return
 }
 
@@ -188,25 +193,5 @@ func Texts() (texts []string) {
 	for i, option := range options {
 		texts[i] = option.String()
 	}
-	return
-}
-
-// ByName returns the option where name == option.Name.
-func ByName(name string) (id int, err error) {
-
-	defer func() {
-		if err != nil {
-			err = fmt.Errorf("wpm.ByName: %w", err)
-		}
-	}()
-
-	var option Option
-	for id, option = range options {
-		if option.Name == name {
-			return
-		}
-	}
-	id = -1
-	err = fmt.Errorf("name %q not found in wpm.options", name)
 	return
 }

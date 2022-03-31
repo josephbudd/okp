@@ -9,9 +9,8 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"github.com/josephbudd/okp/frontend/panels/home/courses"
 	"github.com/josephbudd/okp/frontend/panels/home/training"
-	"github.com/josephbudd/okp/frontend/widget/imgbutton"
+	"github.com/josephbudd/okp/frontend/widget/safebutton"
 	"github.com/josephbudd/okp/frontend/widget/subpanel"
-	"github.com/josephbudd/okp/shared/files"
 )
 
 var (
@@ -61,8 +60,10 @@ func Content() (content *fyne.Container, err error) {
 	// mainMenu := makeMainMenu(coursesContent, trainingContent)
 	// window.SetMainMenu(mainMenu)
 
-	coursesButton := imgbutton.New("Courses", func() { window.SetContent(coursesContent) }, files.CoursesLetteredPianoKeys())
-	trainingButton := imgbutton.New("Training", func() { window.SetContent(trainingContent) }, files.TrainingLetteredPianoKeys())
+	coursesButton := safebutton.New("Courses", func() { window.SetContent(coursesContent) })
+	trainingButton := safebutton.New("Training", func() { window.SetContent(trainingContent) })
+	// coursesButton := imgbutton.New("Courses", func() { window.SetContent(coursesContent) }, files.CoursesLetteredPianoKeys())
+	// trainingButton := imgbutton.New("Training", func() { window.SetContent(trainingContent) }, files.TrainingLetteredPianoKeys())
 	content = container.NewCenter(container.NewHBox(coursesButton, layout.NewSpacer(), trainingButton))
 
 	return

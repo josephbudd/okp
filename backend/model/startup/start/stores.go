@@ -81,7 +81,7 @@ func createDefaultCourse(stores *store.Stores) (course *record.Course, err error
 
 	// Get the speed. 10 wpm spread out like 5 wpm.
 	var speedID int
-	if speedID, err = wpm.ByWPMSpread(7, 5); err != nil {
+	if speedID, err = wpm.ByWPMSpread(13, 5, 7); err != nil {
 		return
 	}
 

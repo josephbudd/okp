@@ -15,10 +15,18 @@ func New(label string, ontap func(), imgres fyne.Resource) (wrapper *fyne.Contai
 	// imgcanvas := canvas.NewImageFromURI(imguri)
 	imgcanvas := canvas.NewImageFromResource(imgres)
 	imgcanvas.SetMinSize(fyne.Size{Width: 345, Height: 146})
+	// The button will disable on click.
+	button := widget.NewButton(label, nil)
+	button.OnTapped = func() {
+		button.Disable()
+		ontap()
+		button.Enable()
+	}
+
 	wrapper = container.New(
 		layout.NewMaxLayout(),
 		imgcanvas,
-		widget.NewButton(label, ontap),
+		button,
 	)
 
 	// our button is ready

@@ -126,7 +126,7 @@ func lessons(
 				lessonNumber++
 				if lesson, err = record.BuildWordLesson(
 					fmt.Sprintf("Lesson %d.", lessonNumber),
-					fmt.Sprintf("A word containing %q and %q", thisCharacter, previousCharacter),
+					fmt.Sprintf("A word containing\n%q and %q", thisCharacter, previousCharacter),
 					lessonNumber,
 					words,
 				); err != nil {
@@ -140,7 +140,7 @@ func lessons(
 					lessonNumber++
 					if lesson, err = record.BuildWordLesson(
 						fmt.Sprintf("Lesson %d.", lessonNumber),
-						fmt.Sprintf("A word containing %q and %d other characters.", thisCharacter, i),
+						fmt.Sprintf("A word containing\n%q and %d other characters.", thisCharacter, i),
 						lessonNumber,
 						words,
 					); err != nil {
@@ -160,7 +160,7 @@ func lessons(
 		lessonNumber++
 		if lesson, err = record.BuildCharacterLesson(
 			fmt.Sprintf("Lesson %d.", lessonNumber),
-			fmt.Sprintf("The character %q which means %q.", thisCharacter, thisKeyCode.Name),
+			fmt.Sprintf("The character %q which means\n%q.", thisCharacter, thisKeyCode.Name),
 			lessonNumber,
 			thisKeyCode,
 		); err != nil {
@@ -184,7 +184,7 @@ func lessons(
 		lessonNumber++
 		if lesson, err = record.BuildSentenceLesson(
 			fmt.Sprintf("Lesson %d.", lessonNumber),
-			fmt.Sprintf("A sentence containing the word %q which means %q.", thisCharacter, thisKeyCode.Name),
+			fmt.Sprintf("A sentence containing\nthe word %q which means\n%q.", thisCharacter, thisKeyCode.Name),
 			lessonNumber,
 			sentences,
 		); err != nil {
