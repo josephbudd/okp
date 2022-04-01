@@ -57,6 +57,19 @@ type statsPanel struct {
 	homeworksLock sync.Mutex
 }
 
+func (p *statsPanel) newLessonContent(countLessons int) {
+	lessonContent := make([]fyne.CanvasObject, 3+(3*countLessons))
+	// Start with the 3 column headings.
+	lessonContent[0] = p.nameHeader
+	lessonContent[1] = p.copyHeader
+	lessonContent[2] = p.keyHeader
+	if p.lessonContent == nil {
+		p.lessonContent = container.New(layout.NewGridLayoutWithColumns(3), lessonContent...)
+	} else {
+		p.lessonContent.Objects = lessonContent
+	}
+}
+
 func newStatsPanel() (p *statsPanel) {
 	p = &statsPanel{
 		courseTitle:      widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
@@ -64,15 +77,10 @@ func newStatsPanel() (p *statsPanel) {
 		speedDescription: widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
 		planDescription:  widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
 	}
-	objects := make([]fyne.CanvasObject, 3, 1024)
-	// Start with the 3 column headings.
 	p.nameHeader = widget.NewLabelWithStyle("Name", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
 	p.copyHeader = widget.NewLabelWithStyle("Copy Tests", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
 	p.keyHeader = widget.NewLabelWithStyle("Key Tests", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
-	objects[0] = p.nameHeader
-	objects[1] = p.copyHeader
-	objects[2] = p.keyHeader
-	p.lessonContent = container.New(layout.NewGridLayoutWithColumns(3), objects...)
+	p.newLessonContent(0)
 
 	vbox := container.New(
 		layout.NewVBoxLayout(),
@@ -90,13 +98,16 @@ func newStatsPanel() (p *statsPanel) {
 	return
 }
 
-func (p *statsPanel) addLesson(lessonNumber uint64, objects *[]fyne.CanvasObject) {
+func (p *statsPanel) addLesson(lessonNumber uint64) {
+	i := 3 * lessonNumber
 	name := widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Monospace: true})
-	*objects = append(*objects, name)
+	p.lessonContent.Objects[i] = name
 	currentCopyTestStat := widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Monospace: true})
-	*objects = append(*objects, currentCopyTestStat)
+	i++
+	p.lessonContent.Objects[i] = currentCopyTestStat
 	currentKeyTestStat := widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Monospace: true})
-	*objects = append(*objects, currentKeyTestStat)
+	i++
+	p.lessonContent.Objects[i] = currentKeyTestStat
 	p.tests[lessonNumber] = lessonTestContent{
 		name:                name,
 		currentCopyTestStat: currentCopyTestStat,
@@ -134,21 +145,17 @@ func (p *statsPanel) fillHomeWorkStats() {
 	course := appstate.CurrentCourse()
 	homeworks := appstate.HomeWorks()
 	lenHomeworks := len(homeworks)
-	nObjects := lenHomeworks + 3
-	objects := make([]fyne.CanvasObject, 3, nObjects)
-	// Start with the 3 column headings.
-	objects[0] = p.nameHeader
-	objects[1] = p.copyHeader
-	objects[2] = p.keyHeader
+	// Initialize the content.
+	p.newLessonContent(lenHomeworks)
 	// Build the map of lesson.
-	p.tests = make(map[uint64]lessonTestContent, nObjects)
+	p.tests = make(map[uint64]lessonTestContent, lenHomeworks)
 	// Continue with each lesson.
 	lastLessonNumber := uint64(lenHomeworks)
 	for n := uint64(1); n <= lastLessonNumber; n++ {
-		p.addLesson(n, &objects)
+		p.addLesson(n)
 	}
 	// Set the lesson content.
-	p.lessonContent.Objects = objects
+	// p.lessonContent.Objects = objects
 
 	var lessonNumber uint64
 	var homework record.HomeWorkCurrent
