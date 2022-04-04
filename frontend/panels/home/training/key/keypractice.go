@@ -12,6 +12,8 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+// keyPracticePanel allows the user to practice keying.
+// It also displays the level name, desc, wpm and score.
 type keyPracticePanel struct {
 	content *fyne.Container
 
@@ -31,6 +33,7 @@ type keyPracticePanel struct {
 	contentLock sync.Mutex
 }
 
+// buildKeyPracticePanel constructs this panel for the package's var pPanel.
 func buildKeyPracticePanel() {
 	text := widget.NewLabel(emptyText)
 	text.Wrapping = fyne.TextWrapWord
@@ -149,6 +152,7 @@ func buildKeyPracticePanel() {
 	pPanel.showStartButton()
 }
 
+// resetTimes initializes the times for recording the user's keyDown and keyUp times.
 func (p *keyPracticePanel) resetTimes() {
 	p.times = make([]time.Time, 1, 1024)
 	p.times[0] = time.Now()
@@ -184,12 +188,14 @@ func (p *keyPracticePanel) showTestCheckResults(copy, ditdahs string, passed boo
 	)
 }
 
+// showStartButton shows the start and cancel buttons and hides the check button.
 func (p *keyPracticePanel) showStartButton() {
 	p.startButton.Show()
 	p.checkButton.Hide()
 	p.dismissButton.Show()
 }
 
+// showCheckButton shows the check button and hides the start and cancel buttons.
 func (p *keyPracticePanel) showCheckButton() {
 	p.startButton.Hide()
 	p.checkButton.Show()

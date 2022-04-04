@@ -12,6 +12,8 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+// keyTestPanel allows the user to test keying.
+// It also displays the level name, desc, wpm and score.
 type keyTestPanel struct {
 	content *fyne.Container
 
@@ -28,6 +30,7 @@ type keyTestPanel struct {
 	contentLock sync.Mutex
 }
 
+// buildKeyTestPanel constructs this panel for the package's var tPanel.
 func buildKeyTestPanel() {
 	text := widget.NewLabel(emptyText)
 	text.Wrapping = fyne.TextWrapWord
@@ -117,6 +120,7 @@ func buildKeyTestPanel() {
 	tPanel.showStartButton()
 }
 
+// resetTimes initializes the times for recording the user's keyDown and keyUp times.
 func (p *keyTestPanel) resetTimes() {
 	p.times = make([]time.Time, 1, 1024)
 	p.times[0] = time.Now()
@@ -147,6 +151,7 @@ func (p *keyTestPanel) showTestCheckResults(copy, ditdahs string, passed bool) {
 	}
 }
 
+// showResults displays the results of the test without allowing the user to try again.
 func (p *keyTestPanel) showResults(copy, ditdahs, messageTitle string) {
 	dialogText := fmt.Sprintf(resultsF, ditdahs, copy)
 	dialog.ShowInformation(
@@ -156,6 +161,7 @@ func (p *keyTestPanel) showResults(copy, ditdahs, messageTitle string) {
 	)
 }
 
+// showResultsTryAgain displays the results of the test and allows the user to try again.
 func (p *keyTestPanel) showResultsTryAgain(copy, ditdahs, messageTitle string) {
 	dialogText := fmt.Sprintf(resultsTryAgainF, ditdahs, copy)
 	f := func(tryAgain bool) {
@@ -175,12 +181,14 @@ func (p *keyTestPanel) showResultsTryAgain(copy, ditdahs, messageTitle string) {
 	)
 }
 
+// showStartButton shows the start and cancel buttons and hides the check button.
 func (p *keyTestPanel) showStartButton() {
 	p.startButton.Show()
 	p.checkButton.Hide()
 	p.dismissButton.Show()
 }
 
+// showCheckButton shows the check button and hides the start and cancel buttons.
 func (p *keyTestPanel) showCheckButton() {
 	p.startButton.Hide()
 	p.checkButton.Show()

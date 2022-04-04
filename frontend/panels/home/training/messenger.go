@@ -2,7 +2,6 @@ package training
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/josephbudd/okp/shared/state"
 )
@@ -48,8 +47,6 @@ func (m *messenger) StateRX(msg state.Message) {
 	// CompletedKeying    bool
 	// CompletedHomeWork bool
 	// CompletedCourse   bool
-
-	log.Printf("training: state msg is %#v", msg)
 
 	// Determine which panel to show.
 	switch {

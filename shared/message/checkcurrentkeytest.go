@@ -1,5 +1,7 @@
 package message
 
+import "github.com/josephbudd/okp/shared/state"
+
 var CheckCurrentKeyTestID = NextID()
 
 type CheckCurrentKeyTest struct {
@@ -14,6 +16,8 @@ type CheckCurrentKeyTest struct {
 	Text    string // to front
 	DitDahs string // to front
 	Passed  bool   // to front
+
+	State state.Message
 
 	Error        bool   // to front
 	Fatal        bool   // to front

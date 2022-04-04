@@ -11,34 +11,14 @@ import (
 )
 
 func showCopyDonePanel() {
-	cPanel.content.Hide()
 	tPanel.content.Hide()
-	pPanel.content.Hide()
 	dPanel.content.Show()
-	groupContent.Refresh()
-}
-
-func showCopyChoosePanel() {
-	dPanel.content.Hide()
-	tPanel.content.Hide()
-	pPanel.content.Hide()
-	cPanel.content.Show()
 	groupContent.Refresh()
 }
 
 func showCopyTestPanel() {
 	tPanel.content.Show()
 	dPanel.content.Hide()
-	pPanel.content.Hide()
-	cPanel.content.Hide()
-	groupContent.Refresh()
-}
-
-func showCopyPracticePanel() {
-	pPanel.content.Show()
-	dPanel.content.Hide()
-	tPanel.content.Hide()
-	cPanel.content.Hide()
 	groupContent.Refresh()
 }
 
@@ -57,17 +37,13 @@ func Init(ctx context.Context, ctxCancel context.CancelFunc, app fyne.App, w fyn
 	// application = app
 	// A panel group has multiple panels so build each panel.
 	buildCopyDonePanel()
-	buildCopyChoosePanel()
-	buildCopyPracticePanel()
 	buildCopyTestPanel()
 	groupContent = container.New(
 		layout.NewMaxLayout(),
 		dPanel.content,
-		cPanel.content,
-		pPanel.content,
 		tPanel.content,
 	)
-	showCopyChoosePanel()
+	showCopyTestPanel()
 	err = msgr.listen()
 	return
 }

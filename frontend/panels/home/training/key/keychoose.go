@@ -18,6 +18,7 @@ type keyChoosePanel struct {
 	contentLock sync.Mutex
 }
 
+// buildKeyChoosePanel constructs this panel for the package's var cPanel.
 func buildKeyChoosePanel() {
 	text := widget.NewLabel("")
 	text.Wrapping = fyne.TextWrapWord
@@ -39,6 +40,7 @@ func buildKeyChoosePanel() {
 	)
 }
 
+// resetText displays the keying related text provided by the state.
 func (p *keyChoosePanel) resetText() {
 	p.contentLock.Lock()
 	defer p.contentLock.Unlock()

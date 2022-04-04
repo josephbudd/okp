@@ -20,8 +20,6 @@ There is a lot of trial and error going on right now as I am trying to find the 
 
 ## At this state of development, the application has 2 parts, "Courses" and "Training"
 
-The application works fine, it's just not perfect yet.
-
 ### 1. Courses
 
 In **Courses** one can
@@ -43,11 +41,6 @@ In **Courses** one can
 In **Training** one learns the current course one lesson at a time. In a lesson one pratices as long as desired and then tests.
 
 #### Copying
-
-##### Copy Practice
-
-* The morse code is keyed by the app.
-* Correct copies don't count toward anything. Incorrect copies don't count against anything.
 
 ##### Copy Test
 

@@ -18,6 +18,7 @@ type keyDonePanel struct {
 	contentLock sync.Mutex
 }
 
+// buildKeyDonePanel constructs this panel for the package's var dPanel.
 func buildKeyDonePanel() {
 	text := widget.NewLabel("")
 	text.Wrapping = fyne.TextWrapWord
@@ -29,6 +30,7 @@ func buildKeyDonePanel() {
 	)
 }
 
+// resetText displays the keying related text provided by the state.
 func (p *keyDonePanel) resetText() {
 	p.contentLock.Lock()
 	defer p.contentLock.Unlock()

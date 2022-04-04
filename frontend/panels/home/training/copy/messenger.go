@@ -48,11 +48,7 @@ func (m *messenger) Listen(msg interface{}) {
 }
 
 func (m *messenger) keyStartTX(testing bool) {
-	if testing {
-		tPanel.setAppIsKeying(true)
-	} else {
-		pPanel.setAppIsKeying(true)
-	}
+	tPanel.setAppIsKeying(true)
 	msg := message.NewKey(groupID, true, testing)
 	message.FrontEndToBackEnd <- msg
 }
@@ -64,25 +60,14 @@ func (m *messenger) keyRX(msg *message.Key) {
 	case msg.Error:
 		// The main process returned an error.
 		dialog.ShowInformation("Error", msg.ErrorMessage, window)
-		if msg.Testing {
-			// Testing. Adjust the testing panel for the user.
-			tPanel.showStartButton()
-			tPanel.copy.SetText(emptyText)
-		} else {
-			// Not testing. Adjust the practice panel for the user.
-			pPanel.showStartButton()
-			pPanel.copy.SetText(emptyText)
-		}
-	case msg.Testing:
+		// Testing. Adjust the testing panel for the user.
+		tPanel.showStartButton()
+		tPanel.copy.SetText(emptyText)
+	default:
 		// Testing. Adjust the testing panel for the user.
 		// The main process has either started or stopped keying as indicated by msg.Run.
 		tPanel.setAppIsKeying(msg.Run)
 		tPanel.showCheckButton()
-	case !msg.Testing:
-		// Practicing, not testing. Adjust the practice panel for the user.
-		// The main process has either started or stopped keying as indicated by msg.Run.
-		pPanel.setAppIsKeying(msg.Run)
-		pPanel.showCheckButton()
 	}
 }
 
@@ -99,8 +84,10 @@ func (m *messenger) StateRX(msg state.Message) {
 	// CompletedHomeWork bool
 	// CompletedCourse   bool
 
-	stateUpdate = msg
-	cPanel.resetText()
+	if !updateStateUpdate(msg) {
+		return
+	}
+
 	dPanel.resetText()
 
 	// Determine which panel to show.
@@ -111,14 +98,14 @@ func (m *messenger) StateRX(msg state.Message) {
 	case msg.CompletedHomeWork:
 		// The user has completed the home work.
 		// So the user is starting a new home work.
-		showCopyChoosePanel()
+		showCopyDonePanel()
 	case msg.CompletedCopying:
-		// The user has completed the copying this homework test.
+		// The user has completed copying this homework test.
 		showCopyDonePanel()
 	case msg.CompletedKeying:
-		// The user has not completed the copying this homework test.
+		// The user has not completed copying this homework test.
 		// The user has completed keying this homework test.
-		showCopyChoosePanel()
+		showCopyTestPanel()
 	default:
 		// Continue to show the same panel.
 	}
@@ -126,8 +113,8 @@ func (m *messenger) StateRX(msg state.Message) {
 
 // CheckCurrentCopyTest
 
-func (m *messenger) checkCurrentCopyTestTX(userCopy string, testing bool) {
-	msg := message.NewCheckCurrentCopyTest(groupID, userCopy, testing)
+func (m *messenger) checkCurrentCopyTestTX(userCopy string) {
+	msg := message.NewCheckCurrentCopyTest(groupID, userCopy)
 	message.FrontEndToBackEnd <- msg
 }
 
@@ -139,9 +126,6 @@ func (m *messenger) checkCurrentCopyTestRX(msg *message.CheckCurrentCopyTest) {
 		dialog.ShowInformation("Error", msg.ErrorMessage, window)
 		return
 	}
-	if msg.Testing {
-		tPanel.showTestCheckResults(msg.Text, msg.Copy, msg.DitDahs, msg.Passed)
-	} else {
-		pPanel.showTestCheckResults(msg.Text, msg.Copy, msg.DitDahs, msg.Passed)
-	}
+	m.StateRX(msg.State)
+	tPanel.showTestCheckResults(msg.Text, msg.Copy, msg.DitDahs, msg.Passed)
 }

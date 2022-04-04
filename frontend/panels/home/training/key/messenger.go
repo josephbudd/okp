@@ -71,7 +71,10 @@ func (m *messenger) StateRX(msg state.Message) {
 	// CompletedHomeWork bool
 	// CompletedCourse   bool
 
-	stateUpdate = msg
+	if !updateStateUpdate(msg) {
+		return
+	}
+
 	cPanel.resetText()
 	dPanel.resetText()
 
@@ -210,6 +213,7 @@ func (m *messenger) checkCurrentKeyTestRX(msg *message.CheckCurrentKeyTest) {
 		dialog.ShowInformation("Error", msg.ErrorMessage, window)
 		return
 	}
+	m.StateRX(msg.State)
 	if msg.Testing {
 		tPanel.showTestCheckResults(msg.Copy, msg.DitDahs, msg.Passed)
 	} else {

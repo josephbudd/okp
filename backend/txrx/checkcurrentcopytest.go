@@ -3,7 +3,6 @@ package txrx
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -26,8 +25,9 @@ func checkCurrentCopyTestRX(ctx context.Context, ctxCancel context.CancelFunc, s
 	var err, fatal error
 	defer func() {
 		if err == nil && fatal == nil {
-			if checkCurrentCopyTestMsg.Testing && checkCurrentCopyTestMsg.Passed {
+			if checkCurrentCopyTestMsg.Passed {
 				stateMsg, fatal = appState.PassCurrentCopyTest()
+				checkCurrentCopyTestMsg.State = *stateMsg
 			}
 		}
 		switch {
@@ -52,13 +52,12 @@ func checkCurrentCopyTestRX(ctx context.Context, ctxCancel context.CancelFunc, s
 	testing := os.Getenv("CWT_TESTING") == "first" || os.Getenv("CWT_TESTING") == "last"
 
 	// If testing this app then just return the correct answer.
-	if checkCurrentCopyTestMsg.Testing && testing {
+	if testing {
 		checkCurrentCopyTestMsg.Passed = true
 		checkCurrentCopyTestMsg.Copy = copyTest.Text
 		return
 	}
 
 	userCopy := strings.ToUpper(strings.TrimSpace(checkCurrentCopyTestMsg.Copy))
-	log.Printf("copyTest.Text:%q, userCopy:%q", copyTest.Text, userCopy)
 	checkCurrentCopyTestMsg.Passed = copyTest.Text == userCopy
 }

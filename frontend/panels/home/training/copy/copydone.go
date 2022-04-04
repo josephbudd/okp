@@ -18,6 +18,7 @@ type copyDonePanel struct {
 	contentLock sync.Mutex
 }
 
+// buildCopyDonePanel constructs this panel for the package's var dPanel.
 func buildCopyDonePanel() {
 	text := widget.NewLabel("")
 	text.Wrapping = fyne.TextWrapWord
@@ -29,6 +30,7 @@ func buildCopyDonePanel() {
 	)
 }
 
+// resetText displays the copying related text provided by the state.
 func (p *copyDonePanel) resetText() {
 
 	p.contentLock.Lock()

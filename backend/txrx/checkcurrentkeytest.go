@@ -28,6 +28,7 @@ func checkCurrentKeyTestRX(ctx context.Context, ctxCancel context.CancelFunc, st
 		if err == nil && fatal == nil {
 			if checkCurrentKeyTestMsg.Testing && checkCurrentKeyTestMsg.Passed {
 				stateMsg, fatal = appState.PassCurrentKeyTest()
+				checkCurrentKeyTestMsg.State = *stateMsg
 			}
 		}
 		switch {

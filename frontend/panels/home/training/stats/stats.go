@@ -11,39 +11,11 @@ import (
 	"github.com/josephbudd/okp/shared/store/record"
 )
 
-type lessonTestContent struct {
-	name                *widget.Label
-	currentCopyTestStat *widget.Label
-	currentKeyTestStat  *widget.Label
-}
-
-func (h lessonTestContent) show() {
-	h.name.Show()
-	h.currentCopyTestStat.Show()
-	h.currentKeyTestStat.Show()
-}
-
-func (h lessonTestContent) fill(homework record.HomeWorkCurrent, course record.CourseCurrent) {
-	var lessonName string
-	if homework.Completed {
-		lessonName = "You have completed this course."
-	} else {
-		lessonName = homework.LessonName
-	}
-	h.name.SetText(fmt.Sprintf("%s\n%s", lessonName, homework.LessonDescription))
-
-	// Copy.
-	copyTest := homework.CopyTest
-	h.currentCopyTestStat.SetText(fmt.Sprintf("Passed %d out of %d copy tests.", copyTest.CountPassed, homework.PassCopyCount))
-	// Key.
-	keyTest := homework.KeyTest
-	h.currentKeyTestStat.SetText(fmt.Sprintf("Passed %d out of %d key tests.", keyTest.CountPassed, homework.PassKeyCount))
-}
-
+// statsPanel is the panel that dislays the current course and the user's test results for each lesson.
 type statsPanel struct {
 	content          *fyne.Container
 	courseTitle      *widget.Label
-	courseComment    *widget.Label
+	currentLesson    *widget.Label
 	speedDescription *widget.Label
 	planDescription  *widget.Label
 	nameHeader       *widget.Label
@@ -51,12 +23,44 @@ type statsPanel struct {
 	keyHeader        *widget.Label
 	lessonContent    *fyne.Container
 
-	tests map[uint64]lessonTestContent // map[homework.LessonNumber]
+	lessonRows map[uint64]statsPanelLessonRow // map[homework.LessonNumber]
 
 	courseLock    sync.Mutex
 	homeworksLock sync.Mutex
 }
 
+// newStatsPanel constructs a new statsPanel.
+func newStatsPanel() (p *statsPanel) {
+	p = &statsPanel{
+		courseTitle:      widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+		currentLesson:    widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+		speedDescription: widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+		planDescription:  widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+	}
+	p.nameHeader = widget.NewLabelWithStyle("Name", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
+	p.copyHeader = widget.NewLabelWithStyle("Copy Tests", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
+	p.keyHeader = widget.NewLabelWithStyle("Key Tests", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
+	p.newLessonContent(0)
+
+	vbox := container.New(
+		layout.NewVBoxLayout(),
+		p.courseTitle,
+		p.planDescription,
+		p.speedDescription,
+		p.currentLesson,
+		p.lessonContent,
+	)
+	scrolled := container.NewScroll(vbox)
+	p.content = container.New(
+		layout.NewMaxLayout(),
+		scrolled,
+	)
+	return
+}
+
+// newLessonContent creates fresh content for the lesson grid.
+// It installs the 3 column headers and then builds empty rows of 3 columns.
+// Each row is for displaying info of a single lesson.
 func (p *statsPanel) newLessonContent(countLessons int) {
 	lessonContent := make([]fyne.CanvasObject, 3+(3*countLessons))
 	// Start with the 3 column headings.
@@ -70,53 +74,25 @@ func (p *statsPanel) newLessonContent(countLessons int) {
 	}
 }
 
-func newStatsPanel() (p *statsPanel) {
-	p = &statsPanel{
-		courseTitle:      widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		courseComment:    widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		speedDescription: widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-		planDescription:  widget.NewLabelWithStyle("", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-	}
-	p.nameHeader = widget.NewLabelWithStyle("Name", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
-	p.copyHeader = widget.NewLabelWithStyle("Copy Tests", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
-	p.keyHeader = widget.NewLabelWithStyle("Key Tests", fyne.TextAlignCenter, fyne.TextStyle{Bold: true})
-	p.newLessonContent(0)
-
-	vbox := container.New(
-		layout.NewVBoxLayout(),
-		p.courseTitle,
-		p.courseComment,
-		p.speedDescription,
-		p.planDescription,
-		p.lessonContent,
-	)
-	scrolled := container.NewScroll(vbox)
-	p.content = container.New(
-		layout.NewMaxLayout(),
-		scrolled,
-	)
-	return
-}
-
-func (p *statsPanel) addLesson(lessonNumber uint64) {
+// fillLessonRow fills a lesson grid row with it's corresponding lesson information.
+func (p *statsPanel) fillLessonRow(lessonNumber uint64) {
 	i := 3 * lessonNumber
 	name := widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Monospace: true})
 	p.lessonContent.Objects[i] = name
-	currentCopyTestStat := widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Monospace: true})
+	copyTestStat := widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Monospace: true})
 	i++
-	p.lessonContent.Objects[i] = currentCopyTestStat
-	currentKeyTestStat := widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Monospace: true})
+	p.lessonContent.Objects[i] = copyTestStat
+	keyTestStat := widget.NewLabelWithStyle("", fyne.TextAlignCenter, fyne.TextStyle{Monospace: true})
 	i++
-	p.lessonContent.Objects[i] = currentKeyTestStat
-	p.tests[lessonNumber] = lessonTestContent{
-		name:                name,
-		currentCopyTestStat: currentCopyTestStat,
-		currentKeyTestStat:  currentKeyTestStat,
+	p.lessonContent.Objects[i] = keyTestStat
+	p.lessonRows[lessonNumber] = statsPanelLessonRow{
+		nameCol: name,
+		copyCol: copyTestStat,
+		keyCol:  keyTestStat,
 	}
 }
 
-// The fills display the current lesson and homework data.
-
+// fillCourse displays the course information proviced by state.
 func (p *statsPanel) fillCourse() {
 
 	p.courseLock.Lock()
@@ -125,18 +101,19 @@ func (p *statsPanel) fillCourse() {
 	appstate := getAppState()
 	currentCourse := appstate.CurrentCourse()
 	p.courseTitle.SetText(fmt.Sprintf("%s: %s", currentCourse.Name, currentCourse.Description))
-	var courseComment string
+	var currentLesson string
 	if currentCourse.Completed {
-		courseComment = "You have completed this course."
+		currentLesson = "You have completed this course."
 	} else {
-		courseComment = fmt.Sprintf("You are currently working on Lesson %d", currentCourse.CurrentLessonNumber)
+		currentLesson = fmt.Sprintf("You are currently working on Lesson %d", currentCourse.CurrentLessonNumber)
 	}
-	p.courseComment.SetText(courseComment)
+	p.currentLesson.SetText(currentLesson)
 	p.speedDescription.SetText(currentCourse.SpeedDescription)
 	p.planDescription.SetText(currentCourse.PlanDescription)
 }
 
-func (p *statsPanel) fillHomeWorkStats() {
+// fillLessons displays all of the lesson information provided by state.
+func (p *statsPanel) fillLessons() {
 
 	p.homeworksLock.Lock()
 	defer p.homeworksLock.Unlock()
@@ -145,24 +122,52 @@ func (p *statsPanel) fillHomeWorkStats() {
 	course := appstate.CurrentCourse()
 	homeworks := appstate.HomeWorks()
 	lenHomeworks := len(homeworks)
-	// Initialize the content.
+
+	// Initialize the lesson grid content.
 	p.newLessonContent(lenHomeworks)
-	// Build the map of lesson.
-	p.tests = make(map[uint64]lessonTestContent, lenHomeworks)
-	// Continue with each lesson.
+
+	// Add the grid rows.
+	p.lessonRows = make(map[uint64]statsPanelLessonRow, lenHomeworks)
 	lastLessonNumber := uint64(lenHomeworks)
 	for n := uint64(1); n <= lastLessonNumber; n++ {
-		p.addLesson(n)
+		p.fillLessonRow(n)
 	}
-	// Set the lesson content.
-	// p.lessonContent.Objects = objects
 
+	// Fill the grid rows.
 	var lessonNumber uint64
 	var homework record.HomeWorkCurrent
 	for lessonNumber, homework = range homeworks {
-		test := p.tests[lessonNumber]
-		test.fill(homework, course)
-		test.show()
+		row := p.lessonRows[lessonNumber]
+		row.fill(homework, course)
 	}
 	p.content.Refresh()
+}
+
+// The rows in the lesson grid.
+
+// statsPanelLessonRow is a lesson's row in the lesson grid.
+// Each row corresponds to a single lesson.
+type statsPanelLessonRow struct {
+	nameCol *widget.Label
+	copyCol *widget.Label
+	keyCol  *widget.Label
+}
+
+// fill displays the user's test results for a lesson.
+// The results are displayed in the lesson's row of the grid.
+func (lr statsPanelLessonRow) fill(homework record.HomeWorkCurrent, course record.CourseCurrent) {
+	// Name column.
+	var lessonName string
+	if homework.Completed {
+		lessonName = "You have completed this course."
+	} else {
+		lessonName = homework.LessonName
+	}
+	lr.nameCol.SetText(fmt.Sprintf("%s\n%s", lessonName, homework.LessonDescription))
+	// Copy column.
+	copyTest := homework.CopyTest
+	lr.copyCol.SetText(fmt.Sprintf("Passed %d out of %d copy tests.", copyTest.CountPassed, homework.PassCopyCount))
+	// Key column.
+	keyTest := homework.KeyTest
+	lr.keyCol.SetText(fmt.Sprintf("Passed %d out of %d key tests.", keyTest.CountPassed, homework.PassKeyCount))
 }

@@ -1,6 +1,8 @@
 package copy
 
 import (
+	"sync"
+
 	"fyne.io/fyne/v2"
 
 	"github.com/josephbudd/okp/frontend/panels"
@@ -21,13 +23,23 @@ var groupContent *fyne.Container
 
 var msgr *messenger
 var dPanel *copyDonePanel
-var cPanel *copyChoosePanel
 var tPanel *copyTestPanel
-var pPanel *copyPracticePanel
 var window fyne.Window
 
 var appState *state.FrontendState
 var stateUpdate state.Message
+var stateUpdateLock sync.Mutex
+
+func updateStateUpdate(msg state.Message) (updated bool) {
+	stateUpdateLock.Lock()
+	defer stateUpdateLock.Unlock()
+
+	if updated = stateUpdate.Time != msg.Time; !updated {
+		return
+	}
+	stateUpdate = msg
+	return
+}
 
 func passedCopyTest() (passed bool) {
 	passed = stateUpdate.CompletedCopying

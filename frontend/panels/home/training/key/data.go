@@ -1,6 +1,8 @@
 package key
 
 import (
+	"sync"
+
 	"fyne.io/fyne/v2"
 
 	"github.com/josephbudd/okp/frontend/panels"
@@ -28,8 +30,20 @@ var window fyne.Window
 
 var appState *state.FrontendState
 var stateUpdate state.Message
+var stateUpdateLock sync.Mutex
 
 var showStatsTab func()
+
+func updateStateUpdate(msg state.Message) (updated bool) {
+	stateUpdateLock.Lock()
+	defer stateUpdateLock.Unlock()
+
+	if updated = stateUpdate.Time != msg.Time; !updated {
+		return
+	}
+	stateUpdate = msg
+	return
+}
 
 func passedKeyTest() (passed bool) {
 	passed = stateUpdate.CompletedKeying

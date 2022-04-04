@@ -99,7 +99,7 @@ func CopyMilliSeconds(microSeconds []int64, wpm uint64, keyCodes []*record.KeyCo
 	// Each ditdahWords is separate word in the sentence.
 	// ditdahWords[0] is the slice of "." and "-" for each char in the sentences first word.
 	// ditdahWords[n] is the slice of "." and "-" for each char in the sentences nth word.
-	ditdahWords := durationsToDitdahStrings(durations, wpm, keyCodes)
+	ditdahWords := durationsToDitdahStrings(durations, wpm)
 	// ditdahWords := milliSecondsToDitdahStrings(durations, wpm, keyCodes)
 	copyGuess = DitdahWordGuesses(ditdahWords, keyCodes)
 	return
@@ -126,8 +126,7 @@ func msToDurations(milliSeconds []int64) (durations []int64) {
 //  * separate words in a sentence using a word pause. (ms > betweenCharPauseMaxMS)
 // Param durations is the keyup, keydown times in unix time of milliseconds / 1000.
 // Param wpm is the current keying words per minute.
-// Param keyCodes are all of the key code records.
-// Returns the slice of words where each word is a slice of dit-dah strings.
+// Returns the slice of words where each word is a slice of character dit-dah strings.
 // For example:
 //  * if the user keyed "ABC" then
 //    * len(ditdahWords) == 1
@@ -137,12 +136,12 @@ func msToDurations(milliSeconds []int64) (durations []int64) {
 //        * ditdahWords[0][2] == "-.-." ("C")
 //  * if the user keyed "A BC" then
 //    * len(ditdahWords) == 2
-//      * len(ditdahWords[0]) is 1
+//      * len(ditdahWords[0]) is the 1st word and it has only 1 character which is "A".
 //        * ditdahWords[0][0] == ".-" ("A")
-//      * len(ditdahWords[1]) is 2.
+//      * len(ditdahWords[1]) is the 2nd word and it has 2 characters which are "BC".
 //        * ditdahWords[1][0] == "-..." ("B")
 //        * ditdahWords[1][1] == "-.-." ("C")
-func durationsToDitdahStrings(durations []int64, wpm uint64, keyCodes []*record.KeyCode) (ditdahWords [][]string) {
+func durationsToDitdahStrings(durations []int64, wpm uint64) (ditdahWords [][]string) {
 	// the pause multiplier adjusts the pause times allowing for human imperfections.
 	pauseMultiplier := 1.5
 	// the key multiplier adjusts the key times allowing for human imperfections.
@@ -173,11 +172,11 @@ func durationsToDitdahStrings(durations []int64, wpm uint64, keyCodes []*record.
 				// Ignore it.
 				ditsNDahs = make([]string, 0, 5)
 			case duration <= betweenDitdahPauseMaxMS:
-				// This is the pause between dits and dahs inside a character.
+				// This pause connects dits and dahs inside a character.
 				// between "." and "-" in ".-" ( "a" )
 				// Continue to the next dit or dah.
 			case duration <= betweenCharPauseMaxMS:
-				// This is the pause between chars in a word.
+				// This pause terminates a character inside a word.
 				// between ".-" and "-." in ".- -." ( "an" )
 				if len(ditsNDahs) > 0 {
 					// Join the dits and dahs into the character's morse code string.
@@ -188,7 +187,8 @@ func durationsToDitdahStrings(durations []int64, wpm uint64, keyCodes []*record.
 					ditsNDahs = ditsNDahs[:0]
 				}
 			case duration > betweenCharPauseMaxMS:
-				// This is the pause between words in a phrase or sentence.
+				// This pause terminates a word in a sentence.
+				// So the last character in a word has been completed.
 				// The pause between ".- -." and ".- .--. .--. .-.. ." in ".- -.   .- .--. .--. .-.. ." ( "an apple" )
 				if len(ditsNDahs) > 0 {
 					// This pause ends the current character.
@@ -210,9 +210,10 @@ func durationsToDitdahStrings(durations []int64, wpm uint64, keyCodes []*record.
 			}
 		case 1:
 			// This duration is the length of a dit or a dah.
-			if duration <= ditMaxMS {
+			switch {
+			case duration <= ditMaxMS:
 				ditsNDahs = append(ditsNDahs, ".")
-			} else {
+			default:
 				ditsNDahs = append(ditsNDahs, "-")
 			}
 		}

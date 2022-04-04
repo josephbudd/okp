@@ -19,13 +19,13 @@ type copyTestPanel struct {
 	copying     bool
 	appIsKeying bool
 
-	startButton   *widget.Button
-	checkButton   *widget.Button
-	dismissButton *widget.Button
+	startButton *widget.Button
+	checkButton *widget.Button
 
 	contentLock sync.Mutex
 }
 
+// buildCopyTestPanel constructs this panel for the package's var tPanel.
 func buildCopyTestPanel() {
 	copy := widget.NewMultiLineEntry()
 	copy.PlaceHolder = "Enter your copy here."
@@ -39,7 +39,7 @@ func buildCopyTestPanel() {
 			tPanel.contentLock.Lock()
 			defer tPanel.contentLock.Unlock()
 
-			if pPanel.checking {
+			if tPanel.checking {
 				dialog.ShowInformation("Not so fast.", "Still checking your last test.", window)
 				return
 			}
@@ -49,7 +49,6 @@ func buildCopyTestPanel() {
 				fmt.Sprintf("The app will start keying %d seconds after you close this dialog.", delay),
 				func(ok bool) {
 					if !ok {
-						showCopyChoosePanel()
 						return
 					}
 					tPanel.copy.SetText(emptyText)
@@ -77,18 +76,13 @@ func buildCopyTestPanel() {
 			}
 			tPanel.copying = false
 			tPanel.checking = true
-			msgr.checkCurrentCopyTestTX(copy, true)
+			msgr.checkCurrentCopyTestTX(copy)
 		},
-	)
-	tPanel.dismissButton = widget.NewButton(
-		"Done",
-		showCopyChoosePanel,
 	)
 	tPanel.content = container.NewVBox(
 		tPanel.copy,
 		tPanel.startButton,
 		tPanel.checkButton,
-		tPanel.dismissButton,
 	)
 	tPanel.showStartButton()
 }
@@ -112,12 +106,13 @@ func (p *copyTestPanel) showTestCheckResults(text, userCopy, ditdahs string, pas
 		p.showResults(text, ditdahs, userCopy, congradulationsYouPassed)
 	case passed:
 		// The user has not completed copying. The user may try again.
-		p.showResultsTryAgain(text, ditdahs, userCopy, congradulationsYouPassed)
+		p.showResults(text, ditdahs, userCopy, congradulationsYouPassed)
 	case !passed:
-		p.showResultsTryAgain(text, ditdahs, userCopy, sorryYouMissedIt)
+		p.showResults(text, ditdahs, userCopy, sorryYouMissedIt)
 	}
 }
 
+// showResults displays the test results to the user.
 func (p *copyTestPanel) showResults(text, ditdahs, userCopy, messageTitle string) {
 	dialogText := fmt.Sprintf(resultsF, text, ditdahs, userCopy)
 	dialog.ShowInformation(
@@ -127,37 +122,19 @@ func (p *copyTestPanel) showResults(text, ditdahs, userCopy, messageTitle string
 	)
 }
 
-func (p *copyTestPanel) showResultsTryAgain(text, ditdahs, userCopy, messageTitle string) {
-	dialogText := fmt.Sprintf(resultsTryAgainF, text, ditdahs, userCopy)
-	f := func(tryAgain bool) {
-		if !tryAgain {
-			if passedCopyTest() {
-				showStatsTab()
-				return
-			}
-			showCopyChoosePanel()
-		}
-	}
-	dialog.ShowConfirm(
-		messageTitle,
-		dialogText,
-		f,
-		window,
-	)
-}
-
+// showStartButton shows the start and cancel buttons and hides the check button.
 func (p *copyTestPanel) showStartButton() {
 	p.startButton.Show()
 	p.checkButton.Hide()
-	p.dismissButton.Show()
 }
 
+// showCheckButton shows the check button and hides the start and cancel buttons.
 func (p *copyTestPanel) showCheckButton() {
 	p.startButton.Hide()
 	p.checkButton.Show()
-	p.dismissButton.Hide()
 }
 
+// setAppIsKeying adjust the display based on if the back end is keying or not.
 func (p *copyTestPanel) setAppIsKeying(is bool) {
 
 	p.contentLock.Lock()

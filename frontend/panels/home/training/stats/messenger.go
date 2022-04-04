@@ -55,10 +55,10 @@ func (m *messenger) StateRX(msg state.Message) {
 		// Display the course texts.
 		sPanel.fillCourse()
 		// Display the new homework stats.
-		sPanel.fillHomeWorkStats()
+		sPanel.fillLessons()
 		showStatsPanel()
 	case msg.CompletedCopying, msg.CompletedKeying:
 		// Update the new homework stats.
-		sPanel.fillHomeWorkStats()
+		sPanel.fillLessons()
 	}
 }

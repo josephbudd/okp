@@ -1,7 +1,10 @@
 package state
 
+import "time"
+
 // Message informs the front process of state changes.
 type Message struct {
+	Time              int64
 	NewCourse         bool
 	PassedCopying     bool
 	PassedKeying      bool
@@ -15,7 +18,9 @@ type StateWith func(msg *Message)
 
 // NewMessage constructs a new State message.
 func NewMessage(with ...StateWith) (msg *Message) {
-	msg = &Message{}
+	msg = &Message{
+		Time: time.Now().UnixMicro(),
+	}
 	for _, w := range with {
 		w(msg)
 	}
